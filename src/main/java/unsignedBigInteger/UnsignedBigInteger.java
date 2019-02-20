@@ -37,15 +37,7 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
             number.add((byte) (i % 10));
             i /= 10;
         }
-    }
-
-    public UnsignedBigInteger(byte i) {
-        if (i < 0) throw new IllegalArgumentException("number is negative");
-        number = new LinkedList<>();
-        while (i > 0) {
-            number.add((byte) (i % 10));
-            i /= 10;
-        }
+        if (number.isEmpty())number.add((byte) 0);
     }
 
     public UnsignedBigInteger(int i) {
@@ -55,6 +47,7 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
             number.add((byte) (i % 10));
             i /= 10;
         }
+        if (number.isEmpty())number.add((byte) 0);
     }
 
     private UnsignedBigInteger(List<Byte> number) {
@@ -67,7 +60,7 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
             return (number.size() > o.number.size()? 1: -1);
         }
         else {
-            for(int i = 0; i < number.size(); i++) {
+            for(int i = number.size() - 1; i >= 0 ; i--) {
                 if (number.get(i) != o.number.get(i)) {
                     if (number.get(i) > o.number.get(i)) return 1;
                     else return -1;
@@ -116,10 +109,6 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return plus(new UnsignedBigInteger(i));
     }
 
-    public UnsignedBigInteger plus(byte i) {
-        return plus(new UnsignedBigInteger(i));
-    }
-
     public UnsignedBigInteger increment() {
         int i = 0;
         while (number.get(i) + 1 == 10) {
@@ -150,11 +139,32 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return tmp;
     }
 
-    public UnsignedBigInteger subtract(UnsignedBigInteger i) {
-        if (this.lessInclusive(i)) return new UnsignedBigInteger("0");
+    public UnsignedBigInteger minus(UnsignedBigInteger o) {
+        if (this.lessInclusive(o)) return new UnsignedBigInteger("0");
         else {
-             return new UnsignedBigInteger("2");//TODO
+            int minSize = o.number.size();
+            List<Byte> newNumber = new ArrayList<>(number.size());
+            int loan = 0;
+            for (int i = 0; i < minSize || loan != 0; i++) {
+                byte tmp = (byte) (number.get(i) - (i < minSize ? o.number.get(i) : 0) - loan);
+                if (tmp >= 0) loan = 0;
+                else {
+                    loan = 1;
+                    tmp += 10;
+                }
+                newNumber.add(tmp);
+            }
+            while (newNumber.get(newNumber.size() - 1) == 0) newNumber.remove(newNumber.size() - 1);
+            return new UnsignedBigInteger(newNumber);
         }
+    }
+
+    public UnsignedBigInteger minus(int o) {
+        return this.minus(new UnsignedBigInteger(o));
+    }
+
+    public UnsignedBigInteger minus(long o) {
+        return this.minus(new UnsignedBigInteger(o));
     }
 
     @Override

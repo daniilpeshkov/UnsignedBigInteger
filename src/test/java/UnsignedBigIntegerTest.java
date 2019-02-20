@@ -42,6 +42,11 @@ public class UnsignedBigIntegerTest {
     }
 
     @Test
+    public void compareTo() {
+        assertEquals(1,new UnsignedBigInteger(20).compareTo(new UnsignedBigInteger(19)));
+    }
+
+    @Test
     public void multiply() {
         UnsignedBigInteger a = new UnsignedBigInteger("2");
         UnsignedBigInteger b = new UnsignedBigInteger("2");
@@ -49,9 +54,16 @@ public class UnsignedBigIntegerTest {
         a = new UnsignedBigInteger("99");
         b = new UnsignedBigInteger("99");
         assertEquals(new UnsignedBigInteger("9801"), a.multiply(b));
-
-
     }
 
+    @Test
+    public void subtract() {
+        assertEquals(new UnsignedBigInteger("1"), new UnsignedBigInteger(100).minus(99));
+        for (int i = 1; i < 9000000; i++) {
+            for (int j = i -1; j < i ; j++) {
+                assertEquals(new UnsignedBigInteger(i - j), new UnsignedBigInteger(i).minus(j));
+            }
+        }
+    }
 
 }
