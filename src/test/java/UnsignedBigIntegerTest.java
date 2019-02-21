@@ -17,11 +17,11 @@ public class UnsignedBigIntegerTest {
 
     @Test
     public void plus() {
-        UnsignedBigInteger a = new UnsignedBigInteger("99");
-        UnsignedBigInteger b = new UnsignedBigInteger("99");
-        assertEquals(new UnsignedBigInteger("198"), a.plus(b));
-        assertEquals(new UnsignedBigInteger("111"), a.plus(12));
-
+        for (int i = 1; i < 9000; i++) {
+            for (int j = 1; j < i ; j++) {
+                assertEquals(new UnsignedBigInteger(i + j), new UnsignedBigInteger(i).plus(j));
+            }
+        }
     }
 
     @Test
@@ -48,22 +48,45 @@ public class UnsignedBigIntegerTest {
 
     @Test
     public void multiply() {
-        UnsignedBigInteger a = new UnsignedBigInteger("2");
-        UnsignedBigInteger b = new UnsignedBigInteger("2");
-        assertEquals(new UnsignedBigInteger("4"), a.multiply(b));
-        a = new UnsignedBigInteger("99");
-        b = new UnsignedBigInteger("99");
-        assertEquals(new UnsignedBigInteger("9801"), a.multiply(b));
-    }
-
-    @Test
-    public void subtract() {
-        assertEquals(new UnsignedBigInteger("1"), new UnsignedBigInteger(100).minus(99));
-        for (int i = 1; i < 9000000; i++) {
-            for (int j = i -1; j < i ; j++) {
-                assertEquals(new UnsignedBigInteger(i - j), new UnsignedBigInteger(i).minus(j));
+        for (int i = 1; i < 900; i++) {
+            for (int j = 1; j <= i ; j++) {
+                assertEquals(new UnsignedBigInteger(i * j), new UnsignedBigInteger(i).multiply(j));
             }
         }
     }
 
+    @Test
+    public void minus() {
+        assertEquals(new UnsignedBigInteger(11), new UnsignedBigInteger(11).divide(1));
+        for (int i = 1; i < 9000; i++) {
+            for (int j = 1; j < i ; j++) {
+                assertEquals(new UnsignedBigInteger(i - j), new UnsignedBigInteger(i).minus(j));
+            }
+         }
+    }
+
+    @Test
+    public void divide() {
+        boolean a = false;
+        try {
+            new UnsignedBigInteger(2).divide(0);
+        } catch (ArithmeticException ex) {
+            a = true;
+        }
+        assertTrue(a);
+        for (int i = 1; i < 9000; i++) {
+            for (int j = 1; j < i ; j++) {
+                assertEquals(new UnsignedBigInteger(i / j), new UnsignedBigInteger(i).divide(j));
+            }
+        }
+    }
+
+    @Test
+    public void mod() {
+        for (int i = 1; i < 9000; i++) {
+            for (int j = 1; j < i ; j++) {
+                assertEquals(new UnsignedBigInteger(i % j), new UnsignedBigInteger(i).mod(j));
+            }
+        }
+    }
 }

@@ -139,13 +139,21 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return tmp;
     }
 
+    public UnsignedBigInteger multiply(int i) {
+        return this.multiply(new UnsignedBigInteger(i));
+    }
+
+    public UnsignedBigInteger multiply(long i) {
+        return this.multiply(new UnsignedBigInteger(i));
+    }
+
     public UnsignedBigInteger minus(UnsignedBigInteger o) {
         if (this.lessInclusive(o)) return new UnsignedBigInteger("0");
         else {
             int minSize = o.number.size();
             List<Byte> newNumber = new ArrayList<>(number.size());
             int loan = 0;
-            for (int i = 0; i < minSize || loan != 0; i++) {
+            for (int i = 0; i < number.size() || loan != 0; i++) {
                 byte tmp = (byte) (number.get(i) - (i < minSize ? o.number.get(i) : 0) - loan);
                 if (tmp >= 0) loan = 0;
                 else {
@@ -165,6 +173,43 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
 
     public UnsignedBigInteger minus(long o) {
         return this.minus(new UnsignedBigInteger(o));
+    }
+
+    public UnsignedBigInteger divide(UnsignedBigInteger o) {
+        if (o.compareTo(new UnsignedBigInteger("1")) == 0)
+            return this.clone();
+        else if(o.compareTo(new UnsignedBigInteger("0")) == 0)
+            throw new ArithmeticException("dividing by zero");
+        else if (o.lessInclusive(this)) {
+            UnsignedBigInteger k = new UnsignedBigInteger(new LinkedList<>());
+            k.number.add((byte) 0);
+            UnsignedBigInteger tmp = this;
+            while (tmp.greaterInclusive(o)) {
+                tmp = tmp.minus(o);
+                k.increment();
+            }
+            return k;
+        } else return new UnsignedBigInteger("0");
+    }
+
+    public UnsignedBigInteger divide(int o) {
+        return this.divide(new UnsignedBigInteger(o));
+    }
+
+    public UnsignedBigInteger divide(long o) {
+        return this.divide(new UnsignedBigInteger(o));
+    }
+
+    public UnsignedBigInteger mod(UnsignedBigInteger i) {
+        return this.minus(i.multiply(this.divide(i)));
+    }
+
+    public UnsignedBigInteger mod(int o) {
+        return this.mod(new UnsignedBigInteger(o));
+    }
+
+    public UnsignedBigInteger mod(long o) {
+        return this.mod(new UnsignedBigInteger(o));
     }
 
     @Override
@@ -188,5 +233,12 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
             stringBuilder.append(number.get(i));
         }
         return stringBuilder.toString();
+    }
+
+    @Override
+    public UnsignedBigInteger clone() {
+        List<Byte> tmp = new ArrayList<>(number.size());
+        tmp.addAll(number);
+        return new UnsignedBigInteger(tmp);
     }
 }
