@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteger> {
+public class UnsignedBigIntegerOld implements java.lang.Comparable<UnsignedBigIntegerOld>, Cloneable {
 
     private List<Byte> number;
 
-    public static UnsignedBigInteger max(UnsignedBigInteger a, UnsignedBigInteger b) {
+    public static UnsignedBigIntegerOld max(UnsignedBigIntegerOld a, UnsignedBigIntegerOld b) {
         if (a.compareTo(b) >= 0) return a;
         else return b;
     }
 
-    public static UnsignedBigInteger min(UnsignedBigInteger a, UnsignedBigInteger b) {
+    public static UnsignedBigIntegerOld min(UnsignedBigIntegerOld a, UnsignedBigIntegerOld b) {
         if (a.compareTo(b) <= 0) return a;
         else return b;
     }
 
-    public UnsignedBigInteger(String number) {
+    public UnsignedBigIntegerOld(String number) {
         if (number == null || number.isEmpty()) throw new IllegalArgumentException("number is empty or null");
         else {
             this.number = new ArrayList<>(number.length());
@@ -30,7 +30,7 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         }
     }
 
-    public UnsignedBigInteger(long i) {
+    public UnsignedBigIntegerOld(long i) {
         if (i < 0) throw new IllegalArgumentException("number is negative");
         number = new LinkedList<>();
         while (i > 0) {
@@ -40,7 +40,7 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         if (number.isEmpty())number.add((byte) 0);
     }
 
-    public UnsignedBigInteger(int i) {
+    public UnsignedBigIntegerOld(int i) {
         if (i < 0) throw new IllegalArgumentException("number is negative");
         number = new LinkedList<>();
         while (i > 0) {
@@ -50,12 +50,12 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         if (number.isEmpty())number.add((byte) 0);
     }
 
-    private UnsignedBigInteger(List<Byte> number) {
+    private UnsignedBigIntegerOld(List<Byte> number) {
         this.number = number;
     }
 
     @Override
-    public int compareTo(UnsignedBigInteger o) {
+    public int compareTo(UnsignedBigIntegerOld o) {
         if(number.size() != o.number.size()) {
             return (number.size() > o.number.size()? 1: -1);
         }
@@ -70,23 +70,23 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return 0;
     }
 
-    public boolean greater(UnsignedBigInteger i) {
+    public boolean greater(UnsignedBigIntegerOld i) {
         return (this.compareTo(i) > 0);
     }
 
-    public boolean greaterInclusive(UnsignedBigInteger i) {
+    public boolean greaterInclusive(UnsignedBigIntegerOld i) {
         return (this.compareTo(i) >= 0);
     }
 
-    public boolean less(UnsignedBigInteger i) {
+    public boolean less(UnsignedBigIntegerOld i) {
         return (this.compareTo(i) < 0);
     }
 
-    public boolean lessInclusive(UnsignedBigInteger i) {
+    public boolean lessInclusive(UnsignedBigIntegerOld i) {
         return (this.compareTo(i) <= 0);
     }
 
-    public UnsignedBigInteger plus(UnsignedBigInteger o) {
+    public UnsignedBigIntegerOld plus(UnsignedBigIntegerOld o) {
         int maxLength = Math.max(number.size(), o.number.size());
         int addition = 0;
         ArrayList<Byte> newArr = new ArrayList<>(maxLength + 1);
@@ -98,18 +98,18 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         if (addition != 0) {
             newArr.add((byte) addition);
         }
-        return new UnsignedBigInteger(newArr);
+        return new UnsignedBigIntegerOld(newArr);
     }
 
-    public UnsignedBigInteger plus(int i) {
-        return plus(new UnsignedBigInteger(i));
+    public UnsignedBigIntegerOld plus(int i) {
+        return plus(new UnsignedBigIntegerOld(i));
     }
 
-    public UnsignedBigInteger plus(long i) {
-        return plus(new UnsignedBigInteger(i));
+    public UnsignedBigIntegerOld plus(long i) {
+        return plus(new UnsignedBigIntegerOld(i));
     }
 
-    public UnsignedBigInteger increment() {
+    public UnsignedBigIntegerOld increment() {
         int i = 0;
         while (number.get(i) + 1 == 10) {
             number.set(i, (byte) 0);
@@ -120,9 +120,9 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return this;
     }
 
-    public UnsignedBigInteger multiply(UnsignedBigInteger i) {
-        UnsignedBigInteger max;
-        UnsignedBigInteger min;
+    public UnsignedBigIntegerOld multiply(UnsignedBigIntegerOld i) {
+        UnsignedBigIntegerOld max;
+        UnsignedBigIntegerOld min;
         if (number.size() >= i.number.size()) {
             max = this;
             min = i;
@@ -130,8 +130,8 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
             max = i;
             min = this;
         }
-        UnsignedBigInteger tmp = new UnsignedBigInteger("0");
-        UnsignedBigInteger k = new UnsignedBigInteger("0");
+        UnsignedBigIntegerOld tmp = new UnsignedBigIntegerOld("0");
+        UnsignedBigIntegerOld k = new UnsignedBigIntegerOld("0");
         while (k.less(min)) {
             tmp = tmp.plus(max);
             k.increment();
@@ -139,16 +139,16 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return tmp;
     }
 
-    public UnsignedBigInteger multiply(int i) {
-        return this.multiply(new UnsignedBigInteger(i));
+    public UnsignedBigIntegerOld multiply(int i) {
+        return this.multiply(new UnsignedBigIntegerOld(i));
     }
 
-    public UnsignedBigInteger multiply(long i) {
-        return this.multiply(new UnsignedBigInteger(i));
+    public UnsignedBigIntegerOld multiply(long i) {
+        return this.multiply(new UnsignedBigIntegerOld(i));
     }
 
-    public UnsignedBigInteger minus(UnsignedBigInteger o) {
-        if (this.lessInclusive(o)) return new UnsignedBigInteger("0");
+    public UnsignedBigIntegerOld minus(UnsignedBigIntegerOld o) {
+        if (this.lessInclusive(o)) return new UnsignedBigIntegerOld("0");
         else {
             int minSize = o.number.size();
             List<Byte> newNumber = new ArrayList<>(number.size());
@@ -163,59 +163,59 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
                 newNumber.add(tmp);
             }
             while (newNumber.get(newNumber.size() - 1) == 0) newNumber.remove(newNumber.size() - 1);
-            return new UnsignedBigInteger(newNumber);
+            return new UnsignedBigIntegerOld(newNumber);
         }
     }
 
-    public UnsignedBigInteger minus(int o) {
-        return this.minus(new UnsignedBigInteger(o));
+    public UnsignedBigIntegerOld minus(int o) {
+        return this.minus(new UnsignedBigIntegerOld(o));
     }
 
-    public UnsignedBigInteger minus(long o) {
-        return this.minus(new UnsignedBigInteger(o));
+    public UnsignedBigIntegerOld minus(long o) {
+        return this.minus(new UnsignedBigIntegerOld(o));
     }
 
-    public UnsignedBigInteger divide(UnsignedBigInteger o) {
-        if (o.compareTo(new UnsignedBigInteger("1")) == 0)
+    public UnsignedBigIntegerOld divide(UnsignedBigIntegerOld o) {
+        if (o.compareTo(new UnsignedBigIntegerOld("1")) == 0)
             return this.clone();
-        else if(o.compareTo(new UnsignedBigInteger("0")) == 0)
+        else if(o.compareTo(new UnsignedBigIntegerOld("0")) == 0)
             throw new ArithmeticException("dividing by zero");
         else if (o.lessInclusive(this)) {
-            UnsignedBigInteger k = new UnsignedBigInteger(new LinkedList<>());
+            UnsignedBigIntegerOld k = new UnsignedBigIntegerOld(new LinkedList<>());
             k.number.add((byte) 0);
-            UnsignedBigInteger tmp = this;
+            UnsignedBigIntegerOld tmp = this;
             while (tmp.greaterInclusive(o)) {
                 tmp = tmp.minus(o);
                 k.increment();
             }
             return k;
-        } else return new UnsignedBigInteger("0");
+        } else return new UnsignedBigIntegerOld("0");
     }
 
-    public UnsignedBigInteger divide(int o) {
-        return this.divide(new UnsignedBigInteger(o));
+    public UnsignedBigIntegerOld divide(int o) {
+        return this.divide(new UnsignedBigIntegerOld(o));
     }
 
-    public UnsignedBigInteger divide(long o) {
-        return this.divide(new UnsignedBigInteger(o));
+    public UnsignedBigIntegerOld divide(long o) {
+        return this.divide(new UnsignedBigIntegerOld(o));
     }
 
-    public UnsignedBigInteger mod(UnsignedBigInteger i) {
+    public UnsignedBigIntegerOld mod(UnsignedBigIntegerOld i) {
         return this.minus(i.multiply(this.divide(i)));
     }
 
-    public UnsignedBigInteger mod(int o) {
-        return this.mod(new UnsignedBigInteger(o));
+    public UnsignedBigIntegerOld mod(int o) {
+        return this.mod(new UnsignedBigIntegerOld(o));
     }
 
-    public UnsignedBigInteger mod(long o) {
-        return this.mod(new UnsignedBigInteger(o));
+    public UnsignedBigIntegerOld mod(long o) {
+        return this.mod(new UnsignedBigIntegerOld(o));
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof UnsignedBigInteger) {
-            return this.compareTo((UnsignedBigInteger) o) == 0;
+        if (o instanceof UnsignedBigIntegerOld) {
+            return this.compareTo((UnsignedBigIntegerOld) o) == 0;
         } else {
             throw new IllegalArgumentException("incorrect type");
         }
@@ -236,9 +236,9 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
     }
 
     @Override
-    public UnsignedBigInteger clone() {
+    public UnsignedBigIntegerOld clone() {
         List<Byte> tmp = new ArrayList<>(number.size());
         tmp.addAll(number);
-        return new UnsignedBigInteger(tmp);
+        return new UnsignedBigIntegerOld(tmp);
     }
 }
