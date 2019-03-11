@@ -1,7 +1,5 @@
 package unsignedBigInteger;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 
 public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteger> {
@@ -9,10 +7,6 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
     private byte[] mag;
 
     private int bitsCount;
-
-    public static UnsignedBigInteger ONE = UnsignedBigInteger.valueOf(1);
-
-    public static UnsignedBigInteger ZERO = UnsignedBigInteger.valueOf(0);
 
     public static UnsignedBigInteger max(UnsignedBigInteger a, UnsignedBigInteger b) {
         if (a.compareTo(b) >= 0) return a;
@@ -24,13 +18,13 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         else return b;
     } 
 
-    private static int compareMags(byte[] mag1, int offset1, int length1,
-                                   byte[] mag2, int offset2, int length2) {
-        int maxLength = Math.max(length1, length2);
+    private static int compareMags(byte[] mag1, int offset1,
+                                   byte[] mag2, int offset2) {
+        int maxLength = Math.max(mag1.length - offset1, mag2.length - offset2);
         int answer = 0;
         for (int i = 0; i < maxLength; i++) {
-            byte a = (i < length1? mag1[offset1 + i]: 0);
-            byte b = (offset2 + i < length2? mag2[offset2 + i]: 0);
+            byte a = (i + offset1 < mag1.length? mag1[offset1 + i]: 0);
+            byte b = (offset2 + i < mag2.length? mag2[offset2 + i]: 0);
             if (a != b) {
                 if (a > b) answer = 1;
                 else answer = -1;
@@ -39,12 +33,12 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         return answer;
     }
 
-    private static void subtractMags(byte[] mag1, int offset1, int length1,
-                                       byte[] mag2, int offset2, int length2) {
+    private static void subtractMags(byte[] mag1, int offset1,
+                                     byte[] mag2, int offset2) {
         int loan = 0;
-        for (int i = 0; i < length1 || loan != 0; i++) {
+        for (int i = 0; i + offset1 < mag1.length || loan != 0; i++) {
             mag1[i + offset1] = (byte) (mag1[i + offset1]
-                    - (i < length2 ? mag2[i + offset2] : 0) - loan);
+                    - (i + offset2 < mag2.length ? mag2[i + offset2] : 0) - loan);
             if (mag1[i + offset1] >= 0) loan = 0;
             else {
                 loan = 1;
@@ -57,24 +51,6 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         while (start > 1 && mag[start - 1] == 0)
             start--;
         return start;
-    }
-
-    public UnsignedBigInteger(String number) {
-        if (number == null || number.isEmpty()) throw new IllegalArgumentException("number is empty or null");
-        else {
-            bitsCount = number.length();
-            this.mag = new byte[bitsCount];
-            for (int i = bitsCount - 1; i >= 0; i--) {
-                int tmp = number.charAt(i) - '0';
-                if (tmp > 9 || tmp < 0) throw new NumberFormatException("is not number");
-                mag[mag.length - i - 1] = (byte) tmp;
-            }
-        }
-    }
-
-    private UnsignedBigInteger(byte[] mag, int bitsCount) {
-        this.mag = mag;
-        this.bitsCount = bitsCount;
     }
 
     public static UnsignedBigInteger valueOf(int val) {
@@ -98,9 +74,28 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         }
     }
 
+
+    public UnsignedBigInteger(String number) {
+        if (number == null || number.isEmpty()) throw new IllegalArgumentException("number is empty or null");
+        else {
+            bitsCount = number.length();
+            this.mag = new byte[bitsCount];
+            for (int i = bitsCount - 1; i >= 0; i--) {
+                int tmp = number.charAt(i) - '0';
+                if (tmp > 9 || tmp < 0) throw new NumberFormatException("is not number");
+                mag[mag.length - i - 1] = (byte) tmp;
+            }
+        }
+    }
+
+    private UnsignedBigInteger(byte[] mag, int bitsCount) {
+        this.mag = mag;
+        this.bitsCount = bitsCount;
+    }
+
     @Override
-    public int compareTo(@NotNull UnsignedBigInteger other) {
-        return compareMags(mag,0, bitsCount, other.mag,0, other.bitsCount);
+    public int compareTo(UnsignedBigInteger other) {
+        return compareMags(mag,0, other.mag,0);
     }
     
     public boolean greater(UnsignedBigInteger other) {
@@ -170,13 +165,34 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
     }
 
     public UnsignedBigInteger divide(UnsignedBigInteger other) {
-        if (less(other)) return ZERO;
-        else if(equals(other)) return ONE;
-        else if(other.equals(ONE)) return this;
-        else {
-            return ZERO;
+        byte[] magCopy = Arrays.copyOf(mag, bitsCount);
+        int offset = magCopy.length - 1;//bitsCount - other.bitsCount;
+        Stack<Byte> newMagReversed = new Stack<>();
+
+        while (compareMags(magCopy, offset, other.mag, 0) < 0 && offset > 0) {
+            offset--;
         }
 
+        while (compareMags(magCopy, 0, other.mag, 0) >= 0 || offset >= 0) {
+            int curDigit = 0;
+            while (compareMags(magCopy, offset, other.mag, 0) < 0 && offset > 0) {
+                offset--;
+                newMagReversed.push((byte) 0);
+            }
+            while (compareMags(magCopy, offset, other.mag, 0) >= 0) {
+                subtractMags(magCopy, offset, other.mag, 0);
+                curDigit++;
+            }
+            newMagReversed.push((byte) curDigit);
+            offset--;
+        }
+
+        byte[] newMag = new byte[newMagReversed.size()];
+        for (int i = 0; i < newMag.length && !newMagReversed.empty(); i++) {
+            newMag[i] = newMagReversed.pop();
+        }
+
+        return new UnsignedBigInteger(newMag, newMag.length);
     }
 
     public UnsignedBigInteger mod(UnsignedBigInteger other) {
