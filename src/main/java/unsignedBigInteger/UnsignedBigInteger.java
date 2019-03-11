@@ -75,16 +75,17 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
     }
 
 
-    public UnsignedBigInteger(String number) {
+    public static UnsignedBigInteger valueOf(String number) {
         if (number == null || number.isEmpty()) throw new IllegalArgumentException("number is empty or null");
         else {
-            bitsCount = number.length();
-            this.mag = new byte[bitsCount];
+            int bitsCount = number.length();
+            byte[] mag = new byte[bitsCount];
             for (int i = bitsCount - 1; i >= 0; i--) {
                 int tmp = number.charAt(i) - '0';
                 if (tmp > 9 || tmp < 0) throw new NumberFormatException("is not number");
                 mag[mag.length - i - 1] = (byte) tmp;
             }
+            return new UnsignedBigInteger(mag, bitsCount);
         }
     }
 
@@ -196,7 +197,20 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
     }
 
     public UnsignedBigInteger mod(UnsignedBigInteger other) {
-        return minus(other.multiply(divide(other)));
+        byte[] magCopy = Arrays.copyOf(mag, bitsCount);
+        int offset = magCopy.length - 1;//bitsCount - other.bitsCount;
+
+        while (compareMags(magCopy, 0, other.mag, 0) >= 0 || offset >= 0) {
+            while (compareMags(magCopy, offset, other.mag, 0) < 0 && offset > 0) {
+                offset--;
+            }
+            while (compareMags(magCopy, offset, other.mag, 0) >= 0) {
+                subtractMags(magCopy, offset, other.mag, 0);
+            }
+            offset--;
+        }
+
+        return new UnsignedBigInteger(magCopy, countMeaningBits(magCopy, bitsCount));
     }
 
     @Override

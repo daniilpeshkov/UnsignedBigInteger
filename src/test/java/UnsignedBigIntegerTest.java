@@ -6,6 +6,13 @@ import unsignedBigInteger.UnsignedBigInteger;
 public class UnsignedBigIntegerTest {
 
     @Test
+    public void constructor() {
+        for (int i = 0; i < 9000; i++) {
+            assertEquals(UnsignedBigInteger.valueOf(i), UnsignedBigInteger.valueOf(String.valueOf(i)));
+        }
+    }
+
+    @Test
     public void plus() {
         for (int i = 1; i <= 9000 ; i++) {
             for (int j = 1; j <= 9000 ; j++) {
@@ -41,6 +48,16 @@ public class UnsignedBigIntegerTest {
             for (int j = 1; j <= 9000 ; j++) {
                 assertEquals(UnsignedBigInteger.valueOf(i / j),
                         UnsignedBigInteger.valueOf(i).divide(UnsignedBigInteger.valueOf(j)));
+            }
+        }
+    }
+
+    @Test
+    public void mod() {
+        for (int i = 1; i <= 9000; i++) {
+            for (int j = 1; j <= 9000 ; j++) {
+                assertEquals(UnsignedBigInteger.valueOf(i % j),
+                        UnsignedBigInteger.valueOf(i).mod(UnsignedBigInteger.valueOf(j)));
             }
         }
     }
