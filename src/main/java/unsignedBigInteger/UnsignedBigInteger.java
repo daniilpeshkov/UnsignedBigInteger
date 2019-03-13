@@ -224,7 +224,11 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(mag) + bitsCount * 3;
+        int hashCode = 0;
+        for (int i = 0; i < bitsCount; i++) {
+            hashCode += mag[i] * 199;
+        }
+        return hashCode;
     }
 
     @Override
