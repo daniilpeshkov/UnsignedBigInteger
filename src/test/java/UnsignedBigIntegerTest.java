@@ -7,9 +7,8 @@ public class UnsignedBigIntegerTest {
 
     @Test
     public void constructor() {
-        for (int i = 0; i < 9000; i++) {
-            assertEquals(UnsignedBigInteger.valueOf(i), UnsignedBigInteger.valueOf(String.valueOf(i)));
-        }
+        UnsignedBigInteger a =  UnsignedBigInteger.valueOf(256);
+        System.out.println(a);
     }
 
     @Test
