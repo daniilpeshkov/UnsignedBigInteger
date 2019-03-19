@@ -7,8 +7,11 @@ public class UnsignedBigIntegerTest {
 
     @Test
     public void constructor() {
-        UnsignedBigInteger a =  UnsignedBigInteger.valueOf(256);
+
+        UnsignedBigInteger a = UnsignedBigInteger.valueOf("128");
+
         System.out.println(a);
+
     }
 
     @Test
