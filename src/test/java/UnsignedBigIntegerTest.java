@@ -7,11 +7,10 @@ public class UnsignedBigIntegerTest {
 
     @Test
     public void constructor() {
-
-        UnsignedBigInteger a = UnsignedBigInteger.valueOf("128");
-
-        System.out.println(a);
-
+        for (int i = 1; i < 9000000 ; i++) {
+            assertEquals(UnsignedBigInteger.valueOf(i).toString(),
+                    UnsignedBigInteger.valueOf(String.valueOf(i)).toString());
+        }
     }
 
     @Test

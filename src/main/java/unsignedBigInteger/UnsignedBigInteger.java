@@ -1,9 +1,6 @@
 package unsignedBigInteger;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteger> {
@@ -23,7 +20,7 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
     public enum Base {BASE10, BASE}
     
     private static int BASE = 1048576; // 2^20
-    private static int[] BASE_IN_10 = new int[] {6,7,5,8,4,0,1};
+    private static int[] BASE_IN_10 = {6,7,5,8,4,0,1};
     
     private int digitsCount;
 
@@ -175,11 +172,19 @@ public class UnsignedBigInteger implements java.lang.Comparable<UnsignedBigInteg
         //TODO
         if (number == null || number.isEmpty()) throw new IllegalArgumentException("number is empty or null");
         else {
-            int[] decimalNum = Stream.of(number.split("")).mapToInt(Integer::parseInt).toArray();
+            int[] decimalNum = Stream.of(new StringBuilder(number).reverse().toString().split(""))
+                    .mapToInt(Integer::parseInt).toArray();
+
             Queue<Integer> digits = new ArrayDeque<>();
             while(compareMags(decimalNum, 0, new int[] {0}, 0) != 0) {
                 DivisionResult result = divideMags(decimalNum,BASE_IN_10, Base.BASE10);
-                digits.add(result.mod[0]);
+                int length = countMeaningDigits(result.mod);
+                int curDigit = result.mod[length - 1];
+                for (int i = length - 2; i >= 0; i--) {
+                    curDigit *= 10;
+                    curDigit += result.mod[i];
+                }
+                digits.add(curDigit);
                 decimalNum = result.result;
             }
 
